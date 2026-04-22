@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.routes import factorization, totient
+from app.routes import factorization, totient, millerrabin, fastexp, crt
 
 app = FastAPI(
     title="Number Theory Web Application",
@@ -26,6 +26,24 @@ app.include_router(
     totient.router,
     prefix="/api/totient",
     tags=["Totient"]
+)
+
+app.include_router(
+    millerrabin.router, 
+    prefix="/api/millerrabin", 
+    tags=["Miller-Rabin"]
+)
+
+app.include_router(
+    fastexp.router, 
+    prefix="/api/fastexp", 
+    tags=["Fast Exponentiation"]
+)
+
+app.include_router(
+    crt.router, 
+    prefix="/api/crt", 
+    tags=["Chinese Remainder Theorem"]
 )
 
 @app.get("/")
