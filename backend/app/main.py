@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from app.routes import factorization, totient
 
 app = FastAPI(
     title="Number Theory Web Application",
@@ -13,6 +14,18 @@ app.add_middleware(
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+)
+
+app.include_router(
+    factorization.router,
+    prefix="/api/factorization",
+    tags=["Factorization"]
+)
+
+app.include_router(
+    totient.router,
+    prefix="/api/totient",
+    tags=["Totient"]
 )
 
 @app.get("/")

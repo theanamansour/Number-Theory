@@ -1,41 +1,115 @@
+import { useState } from "react";
 import "./App.css";
 
 function App() {
+  const [number, setNumber] = useState("");
+  const [result, setResult] = useState(null);
+  const [error, setError] = useState("");
+  const [copied, setCopied] = useState(false);
+
+  const handleTotient = async () => {
+    setError("");
+    setResult(null);
+    setCopied(false);
+
+    if (!number || isNaN(number) || Number(number) <= 0) {
+      setError("Please enter a valid positive integer.");
+      return;
+    }
+
+    try {
+      const response = await fetch("http://127.0.0.1:8000/api/totient/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ n: Number(number) })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setError(data.detail || "Something went wrong.");
+        return;
+      }
+
+      setResult(data);
+    } catch {
+      setError("Could not connect to backend.");
+    }
+  };
+
+  const handleCopy = async () => {
+    if (result?.phi !== undefined) {
+      await navigator.clipboard.writeText(String(result.phi));
+      setCopied(true);
+    }
+  };
+
   return (
     <div className="app">
       <header className="hero">
-        <h1>Number Theory Web Application</h1>
+        <h1>Euler’s Totient Function</h1>
         <p>
-          An educational cryptography toolkit for prime factorization, Euler’s
-          totient function, Miller–Rabin primality testing, fast modular
-          exponentiation, and the Chinese Remainder Theorem.
+          Enter a positive integer to compute φ(n), with formula and
+          step-by-step explanation.
         </p>
       </header>
 
-      <main className="modules">
+      <main className="module-container">
         <div className="card">
-          <h2>Prime Factorization</h2>
-          <p>Break an integer into its prime factors with step-by-step output.</p>
-        </div>
+          <input
+            type="number"
+            value={number}
+            onChange={(e) => setNumber(e.target.value)}
+            placeholder="Enter a number"
+          />
 
-        <div className="card">
-          <h2>Euler’s Totient</h2>
-          <p>Compute φ(n) and explain how the result is derived.</p>
-        </div>
+          <div className="button-row">
+            <button onClick={handleTotient}>Compute Totient</button>
+            <button
+              className="secondary"
+              onClick={() => {
+                setNumber("");
+                setResult(null);
+                setError("");
+                setCopied(false);
+              }}
+            >
+              Clear
+            </button>
+          </div>
 
-        <div className="card">
-          <h2>Miller–Rabin</h2>
-          <p>Test whether a number is composite or probably prime.</p>
-        </div>
+          {error && <p className="error">{error}</p>}
 
-        <div className="card">
-          <h2>Fast Modular Exponentiation</h2>
-          <p>Efficiently compute a^b mod m with algorithm steps.</p>
-        </div>
+          {result && (
+            <div className="result-box">
+              <h2>Result</h2>
+              <p><strong>Input:</strong> {result.input}</p>
+              <p><strong>φ(n):</strong> {result.phi}</p>
+              <p><strong>Formula:</strong> {result.formula}</p>
 
-        <div className="card">
-          <h2>Chinese Remainder Theorem</h2>
-          <p>Solve congruence systems or compute residues from a number.</p>
+              <button onClick={handleCopy}>
+                {copied ? "Copied!" : "Copy Result"}
+              </button>
+
+              <h3>Prime Factors Used</h3>
+              <ul>
+                {result.factors.map((factor, index) => (
+                  <li key={index}>
+                    {factor.prime}^{factor.power}
+                  </li>
+                ))}
+              </ul>
+
+              <h3>Step-by-Step Explanation</h3>
+              <ol>
+                {result.steps.map((step, index) => (
+                  <li key={index}>{step}</li>
+                ))}
+              </ol>
+            </div>
+          )}
         </div>
       </main>
     </div>

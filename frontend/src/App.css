@@ -15,24 +15,76 @@ body {
 }
 
 .hero h1 {
-  margin-bottom: 0.75rem;
+  margin-bottom: 0.5rem;
 }
 
 .hero p {
-  max-width: 850px;
+  max-width: 700px;
   margin: 0 auto;
   line-height: 1.6;
 }
 
-.modules {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 1rem;
+.module-container {
+  display: flex;
+  justify-content: center;
 }
 
 .card {
   background: white;
-  padding: 1.25rem;
+  padding: 2rem;
   border-radius: 14px;
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+  width: 100%;
+  max-width: 720px;
+}
+
+input {
+  width: 100%;
+  padding: 0.85rem;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  border: 1px solid #d1d5db;
+  border-radius: 10px;
+  font-size: 1rem;
+  box-sizing: border-box;
+}
+
+.button-row {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+button {
+  padding: 0.8rem 1.2rem;
+  border: none;
+  border-radius: 10px;
+  background: #2563eb;
+  color: white;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #1d4ed8;
+}
+
+button.secondary {
+  background: #6b7280;
+}
+
+button.secondary:hover {
+  background: #4b5563;
+}
+
+.result-box {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  background: #f9fafb;
+  border-radius: 12px;
+}
+
+.error {
+  color: #dc2626;
+  margin-top: 1rem;
 }
