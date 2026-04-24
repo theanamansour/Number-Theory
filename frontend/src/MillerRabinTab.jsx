@@ -77,12 +77,6 @@ Result: ${result.result}`;
 
   return (
     <div className="tool-content">
-      <header className="tool-header">
-        <h2>Miller-Rabin Test</h2>
-        <p>
-          Enter an odd integer n and a base a to test whether n is composite or maybe prime.
-        </p>
-      </header>
 
       <main className="module-container">
         <div className="card">

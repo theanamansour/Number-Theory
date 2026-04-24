@@ -80,12 +80,6 @@ function FastExponentiationTab() {
 
   return (
     <div className="tool-content">
-      <header className="tool-header">
-        <h2>Fast Exponentiation</h2>
-        <p>
-          Enter a base, exponent, and modulus to compute a^b mod n using fast exponentiation.
-        </p>
-      </header>
 
       <main className="module-container">
         <div className="card">

@@ -116,12 +116,6 @@ function CRTTab() {
 
   return (
     <div className="tool-content">
-      <header className="tool-header">
-        <h2>Chinese Remainder Theorem</h2>
-        <p>
-          Convert between A and its residues modulo pairwise relatively prime moduli.
-        </p>
-      </header>
 
       <main className="module-container">
         <div className="card">

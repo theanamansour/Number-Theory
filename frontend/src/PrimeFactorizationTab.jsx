@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Hash, Lightbulb, Rocket, RotateCcw, Star, Info } from "lucide-react";
 import "./App.css";
 
 function PrimeFactorizationTab() {
@@ -55,28 +56,80 @@ function PrimeFactorizationTab() {
 
   return (
     <div className="tool-content">
-      <header className="tool-header">
-        <h2>Prime Factorization</h2>
-        <p>
-          Enter a positive integer to compute its prime factorization, with
-          factor list and step-by-step explanation.
-        </p>
-      </header>
-
       <main className="module-container">
         <div className="card">
-          <input
-            type="number"
-            value={number}
-            onChange={(e) => setNumber(e.target.value)}
-            placeholder="Enter a number"
-          />
+          <div className="tool-grid">
+            <div className="tool-left">
+              <div className="tool-title">
+                <div className="tool-icon">
+                  <Hash size={32} strokeWidth={2.5} />
+                </div>
+                <div>
+                  <h3>Prime Factorization</h3>
+                  <p>Decompose a positive integer into its prime factors.</p>
+                </div>
+              </div>
 
-          <div className="button-row">
-            <button onClick={handleFactorization}>Compute Factorization</button>
-            <button className="secondary" onClick={handleClear}>
-              Clear
-            </button>
+              <label>Enter a positive integer</label>
+              <input
+                type="number"
+                value={number}
+                onChange={(e) => setNumber(e.target.value)}
+                placeholder="e.g. 360"
+              />
+              <div className="input-tip">
+                <Lightbulb size={14} strokeWidth={1.8} />
+                <span>Tip: Enter any number greater than 1.</span>
+              </div>
+
+              <div className="button-row">
+                <button onClick={handleFactorization}>
+                  <Rocket size={16} strokeWidth={2} />
+                  Compute
+                </button>
+
+                <button className="secondary" onClick={handleClear}>
+                  <RotateCcw size={16} strokeWidth={2} />
+                  Clear
+                </button>
+              </div>
+            </div>
+
+            <div className="tool-right">
+              <div className="examples-title">
+                <Star size={14} strokeWidth={2} />
+                <span>Try these examples</span>
+              </div>
+              <div className="example-row">
+                <button className="example-chip" onClick={() => setNumber("84")}>
+                  84
+                </button>
+                <button className="example-chip" onClick={() => setNumber("360")}>
+                  360
+                </button>
+                <button className="example-chip" onClick={() => setNumber("945")}>
+                  945
+                </button>
+                <button className="example-chip" onClick={() => setNumber("1024")}>
+                  1024
+                </button>
+              </div>
+
+              <div className="info-box">
+                <div className="info-title">
+                  <div className="info-icon">
+                    <Info size={14} strokeWidth={2.2} />
+                  </div>
+                  <h4>What is Prime Factorization?</h4>
+                  </div>
+
+                <p>
+                  Every integer n &gt; 1 can be expressed uniquely
+                  <br />
+                  as a product of prime powers.
+                </p>
+              </div>
+            </div>
           </div>
 
           {error && <p className="error">{error}</p>}
@@ -84,28 +137,44 @@ function PrimeFactorizationTab() {
           {result && (
             <div className="result-box">
               <h2>Result</h2>
-              <p><strong>Input:</strong> {result.input}</p>
-              <p><strong>Prime Factorization:</strong> {result.formatted}</p>
 
-              <button onClick={handleCopy}>
-                {copied ? "Copied!" : "Copy Result"}
-              </button>
+              <div className="result-summary">
+                <div className="summary-pill">
+                  <span className="summary-label">Input</span>
+                  <span className="summary-value">{result.input}</span>
+                </div>
 
-              <h3>Prime Factors</h3>
-              <ul>
-                {result.factors.map((factor, index) => (
-                  <li key={index}>
-                    {factor.prime}^{factor.power}
-                  </li>
-                ))}
-              </ul>
+                <div className="summary-pill">
+                  <span className="summary-label">Factorization</span>
+                  <span className="summary-value">{result.formatted}</span>
+                </div>
+              </div>
 
-              <h3>Step-by-Step Explanation</h3>
-              <ol>
-                {result.steps.map((step, index) => (
-                  <li key={index}>{step}</li>
-                ))}
-              </ol>
+              <div className="button-row">
+                <button onClick={handleCopy}>
+                  {copied ? "Copied!" : "Copy Result"}
+                </button>
+              </div>
+
+              <div className="section-card">
+                <h3>Prime Factors</h3>
+                <ul>
+                  {result.factors.map((factor, index) => (
+                    <li key={index}>
+                      {factor.prime}^{factor.power}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              <div className="section-card">
+                <h3>Step-by-Step Explanation</h3>
+                <ol>
+                  {result.steps.map((step, index) => (
+                    <li key={index}>{step}</li>
+                  ))}
+                </ol>
+              </div>
             </div>
           )}
         </div>

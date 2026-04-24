@@ -48,13 +48,6 @@ function TotientTab() {
 
   return (
     <div className="tool-content">
-      <header className="tool-header">
-        <h2>Euler’s Totient Function</h2>
-        <p>
-          Enter a positive integer to compute φ(n), with formula and
-          step-by-step explanation.
-        </p>
-      </header>
 
       <main className="module-container">
         <div className="card">
