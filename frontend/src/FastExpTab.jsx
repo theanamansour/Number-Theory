@@ -1,5 +1,13 @@
 import { useState } from "react";
 import "./App.css";
+import {
+  Zap,
+  Lightbulb,
+  Rocket,
+  RotateCcw,
+  Star,
+  Info,
+} from "lucide-react";
 
 function FastExponentiationTab() {
   const [base, setBase] = useState("");
@@ -38,13 +46,13 @@ function FastExponentiationTab() {
       const response = await fetch("http://127.0.0.1:8000/api/fastexp/", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           a: Number(base),
           b: Number(exponent),
-          n: Number(modulus)
-        })
+          n: Number(modulus),
+        }),
       });
 
       const data = await response.json();
@@ -80,35 +88,119 @@ function FastExponentiationTab() {
 
   return (
     <div className="tool-content">
-
       <main className="module-container">
         <div className="card">
-          <input
-            type="number"
-            value={base}
-            onChange={(e) => setBase(e.target.value)}
-            placeholder="Enter base a"
-          />
+          <div className="tool-grid">
+            {/* LEFT */}
+            <div className="tool-left">
+              <div className="tool-title">
+                <div className="tool-icon">
+                  <Zap size={30} strokeWidth={2.2} />
+                </div>
+                <div>
+                  <h3>Fast Exponentiation</h3>
+                  <p>Compute large powers modulo n efficiently.</p>
+                </div>
+              </div>
 
-          <input
-            type="number"
-            value={exponent}
-            onChange={(e) => setExponent(e.target.value)}
-            placeholder="Enter exponent b"
-          />
+              <div className="input-grid">
+                <div>
+                  <label>Base a</label>
+                  <input
+                    type="number"
+                    value={base}
+                    onChange={(e) => setBase(e.target.value)}
+                    placeholder="e.g. 5"
+                  />
+                </div>
 
-          <input
-            type="number"
-            value={modulus}
-            onChange={(e) => setModulus(e.target.value)}
-            placeholder="Enter modulus n"
-          />
+                <div>
+                  <label>Exponent b</label>
+                  <input
+                    type="number"
+                    value={exponent}
+                    onChange={(e) => setExponent(e.target.value)}
+                    placeholder="e.g. 3"
+                  />
+                </div>
 
-          <div className="button-row">
-            <button onClick={handleFastExponentiation}>Compute</button>
-            <button className="secondary" onClick={handleClear}>
-              Clear
-            </button>
+                <div className="full-width">
+                  <label>Modulus n</label>
+                  <input
+                    type="number"
+                    value={modulus}
+                    onChange={(e) => setModulus(e.target.value)}
+                    placeholder="e.g. 13"
+                  />
+                </div>
+              </div>
+
+              <div className="input-tip">
+                <Lightbulb size={14} strokeWidth={1.8} />
+                <span>
+                  Tip: Use a non-negative exponent and a modulus greater than 0.
+                </span>
+              </div>
+
+              <div className="button-row">
+                <button onClick={handleFastExponentiation}>
+                  <Rocket size={16} strokeWidth={2} />
+                  Compute
+                </button>
+
+                <button className="secondary" onClick={handleClear}>
+                  <RotateCcw size={16} strokeWidth={2} />
+                  Clear
+                </button>
+              </div>
+            </div>
+
+            {/* RIGHT */}
+            <div className="tool-right">
+              <div className="examples-title">
+                <Star size={14} strokeWidth={2} />
+                <span>Try these examples</span>
+              </div>
+
+              {/* ✅ FIXED PART */}
+              <div className="example-row fast-exp-row">
+                <button
+                  className="example-chip fast-exp-chip"
+                  onClick={() => {
+                    setBase("5");
+                    setExponent("3");
+                    setModulus("13");
+                  }}
+                >
+                  5³ mod 13
+                </button>
+
+                <button
+                  className="example-chip fast-exp-chip"
+                  onClick={() => {
+                    setBase("7");
+                    setExponent("128");
+                    setModulus("13");
+                  }}
+                >
+                  7¹²⁸ mod 13
+                </button>
+              </div>
+
+              <div className="info-box">
+                <div className="info-title">
+                  <div className="info-icon">
+                    <Info size={14} strokeWidth={2.2} />
+                  </div>
+                  <h4>What is Fast Exponentiation?</h4>
+                </div>
+
+                <p>
+                  Fast exponentiation computes powers efficiently by repeatedly
+                  squaring instead of multiplying one step at a time.
+                </p>
+              </div>
+            </div>
           </div>
 
           {error && <p className="error">{error}</p>}
@@ -116,21 +208,43 @@ function FastExponentiationTab() {
           {result && (
             <div className="result-box">
               <h2>Result</h2>
-              <p><strong>Base:</strong> {result.base}</p>
-              <p><strong>Exponent:</strong> {result.exponent}</p>
-              <p><strong>Modulus:</strong> {result.modulus}</p>
-              <p><strong>Value:</strong> {result.result}</p>
 
-              <button onClick={handleCopy}>
-                {copied ? "Copied!" : "Copy Result"}
-              </button>
+              <div className="result-summary">
+                <div className="summary-pill">
+                  <span className="summary-label">Base</span>
+                  <span className="summary-value">{result.base}</span>
+                </div>
 
-              <h3>Step-by-Step Explanation</h3>
-              <ol>
-                {result.steps.map((step, index) => (
-                  <li key={index}>{step}</li>
-                ))}
-              </ol>
+                <div className="summary-pill">
+                  <span className="summary-label">Exponent</span>
+                  <span className="summary-value">{result.exponent}</span>
+                </div>
+
+                <div className="summary-pill">
+                  <span className="summary-label">Modulus</span>
+                  <span className="summary-value">{result.modulus}</span>
+                </div>
+
+                <div className="summary-pill">
+                  <span className="summary-label">Value</span>
+                  <span className="summary-value">{result.result}</span>
+                </div>
+              </div>
+
+              <div className="button-row">
+                <button onClick={handleCopy}>
+                  {copied ? "Copied!" : "Copy Result"}
+                </button>
+              </div>
+
+              <div className="section-card">
+                <h3>Step-by-Step Explanation</h3>
+                <ol>
+                  {result.steps.map((step, index) => (
+                    <li key={index}>{step}</li>
+                  ))}
+                </ol>
+              </div>
             </div>
           )}
         </div>

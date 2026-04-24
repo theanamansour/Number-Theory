@@ -1,5 +1,13 @@
 import { useState } from "react";
 import "./App.css";
+import {
+  Diamond,
+  Lightbulb,
+  Rocket,
+  RotateCcw,
+  Star,
+  Info,
+} from "lucide-react";
 
 function MillerRabinTab() {
   const [number, setNumber] = useState("");
@@ -35,12 +43,12 @@ function MillerRabinTab() {
       const response = await fetch("http://127.0.0.1:8000/api/millerrabin/", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           n: nValue,
-          a: aValue
-        })
+          a: aValue,
+        }),
       });
 
       const data = await response.json();
@@ -77,28 +85,104 @@ Result: ${result.result}`;
 
   return (
     <div className="tool-content">
-
       <main className="module-container">
         <div className="card">
-          <input
-            type="number"
-            value={number}
-            onChange={(e) => setNumber(e.target.value)}
-            placeholder="Enter an odd integer n"
-          />
+          <div className="tool-grid">
+            <div className="tool-left">
+              <div className="tool-title">
+                <div className="tool-icon">
+                  <Diamond size={30} strokeWidth={2.2} />
+                </div>
+                <div>
+                  <h3>Miller–Rabin</h3>
+                  <p>Test whether an odd integer is probably prime using a chosen base.</p>
+                </div>
+              </div>
 
-          <input
-            type="number"
-            value={base}
-            onChange={(e) => setBase(e.target.value)}
-            placeholder="Enter a base a"
-          />
+              <label>Odd integer n</label>
+              <input
+                type="number"
+                value={number}
+                onChange={(e) => setNumber(e.target.value)}
+                placeholder="e.g. 91"
+              />
 
-          <div className="button-row">
-            <button onClick={handleMillerRabin}>Run Miller-Rabin</button>
-            <button className="secondary" onClick={handleClear}>
-              Clear
-            </button>
+              <label>Base a</label>
+              <input
+                type="number"
+                value={base}
+                onChange={(e) => setBase(e.target.value)}
+                placeholder="e.g. 3"
+              />
+
+              <div className="input-tip">
+                <Lightbulb size={14} strokeWidth={1.8} />
+                <span>Tip: Use an odd n ≥ 3 and a base where 1 &lt; a &lt; n - 1.</span>
+              </div>
+
+              <div className="button-row">
+                <button onClick={handleMillerRabin}>
+                  <Rocket size={16} strokeWidth={2} />
+                  Run Test
+                </button>
+
+                <button className="secondary" onClick={handleClear}>
+                  <RotateCcw size={16} strokeWidth={2} />
+                  Clear
+                </button>
+              </div>
+            </div>
+
+            <div className="tool-right">
+              <div className="examples-title">
+                <Star size={14} strokeWidth={2} />
+                <span>Try these examples</span>
+              </div>
+
+              <div className="example-row">
+                <button
+                  className="example-chip"
+                  onClick={() => {
+                    setNumber("91");
+                    setBase("3");
+                  }}
+                >
+                  91, 3
+                </button>
+                <button
+                  className="example-chip"
+                  onClick={() => {
+                    setNumber("221");
+                    setBase("5");
+                  }}
+                >
+                  221, 5
+                </button>
+                <button
+                  className="example-chip"
+                  onClick={() => {
+                    setNumber("561");
+                    setBase("2");
+                  }}
+                >
+                  561, 2
+                </button>
+              </div>
+
+              <div className="info-box">
+                <div className="info-title">
+                  <div className="info-icon">
+                    <Info size={14} strokeWidth={2.2} />
+                  </div>
+                  <h4>What is Miller–Rabin?</h4>
+                </div>
+
+                <p>
+                  Miller–Rabin is a probabilistic primality test that checks
+                  whether a number is likely prime or definitely composite.
+                </p>
+              </div>
+            </div>
           </div>
 
           {error && <p className="error">{error}</p>}
@@ -106,30 +190,54 @@ Result: ${result.result}`;
           {result && (
             <div className="result-box">
               <h2>Result</h2>
-              <p><strong>Input:</strong> {result.input}</p>
-              <p><strong>Base:</strong> {result.base}</p>
-              <p><strong>Decomposition:</strong> {result.decomposition}</p>
-              <p><strong>Result:</strong> {result.result}</p>
 
-              <button onClick={handleCopy}>
-                {copied ? "Copied!" : "Copy Result"}
-              </button>
+              <div className="result-summary">
+                <div className="summary-pill">
+                  <span className="summary-label">Input</span>
+                  <span className="summary-value">{result.input}</span>
+                </div>
 
-              <h3>Test Sequence</h3>
-              <ul>
-                {result.sequence.map((item, index) => (
-                  <li key={index}>
-                    {item.expression} = {item.value}
-                  </li>
-                ))}
-              </ul>
+                <div className="summary-pill">
+                  <span className="summary-label">Base</span>
+                  <span className="summary-value">{result.base}</span>
+                </div>
 
-              <h3>Step-by-Step Explanation</h3>
-              <ol>
-                {result.steps.map((step, index) => (
-                  <li key={index}>{step}</li>
-                ))}
-              </ol>
+                <div className="summary-pill">
+                  <span className="summary-label">Result</span>
+                  <span className="summary-value">{result.result}</span>
+                </div>
+
+                <div className="summary-pill">
+                  <span className="summary-label">Decomposition</span>
+                  <span className="summary-value">{result.decomposition}</span>
+                </div>
+              </div>
+
+              <div className="button-row">
+                <button onClick={handleCopy}>
+                  {copied ? "Copied!" : "Copy Result"}
+                </button>
+              </div>
+
+              <div className="section-card">
+                <h3>Test Sequence</h3>
+                <ul>
+                  {result.sequence.map((item, index) => (
+                    <li key={index}>
+                      {item.expression} = {item.value}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              <div className="section-card">
+                <h3>Step-by-Step Explanation</h3>
+                <ol>
+                  {result.steps.map((step, index) => (
+                    <li key={index}>{step}</li>
+                  ))}
+                </ol>
+              </div>
             </div>
           )}
         </div>

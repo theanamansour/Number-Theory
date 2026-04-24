@@ -729,6 +729,80 @@ button:hover {
   margin-bottom: 6px;
 }
 
+.label {
+  display: block;
+  margin-bottom: 4px;   /* ↓ reduce this (default is usually bigger) */
+  font-weight: 600;
+}
+
+.tool-left label {
+  display: block;
+  margin-bottom: 4px !important;  /* force override */
+}
+
+.tool-left input {
+  margin-top: 0 !important;
+}
+
+.input-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.input-grid .full-width {
+  grid-column: span 2;
+}
+
+.example-chip {
+  border: 1px solid rgba(124, 58, 237, 0.25);
+  color: #7c3aed;
+  background: rgba(124, 58, 237, 0.05);
+  font-weight: 500;
+}
+
+.example-row {
+  display: flex;
+  gap: 16px;              /* 🔥 space between buttons */
+  flex-wrap: wrap;        /* prevents overflow on small screens */
+}
+
+.fast-exp-row {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.fast-exp-chip {
+  white-space: nowrap;
+  padding: 10px 18px;
+  font-size: 16px;
+
+  min-width: 120px;
+  max-width: fit-content;   /* grows with content */
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.crt-row {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.crt-chip {
+  white-space: nowrap;
+  padding: 10px 18px;
+  min-width: 180px;
+  width: auto;
+  height: auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .summary-value {
   display: block;
   color: var(--primary);
