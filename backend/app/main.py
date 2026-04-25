@@ -1,12 +1,23 @@
-from fastapi import FastAPI
+
 from fastapi.middleware.cors import CORSMiddleware
-from app.routes import factorization, totient, millerrabin, fastexp, crt
+from app.db import init_db
+from app.routes import factorization, totient, millerrabin, fastexp, crt, auth, history, education
+from fastapi import FastAPI, HTTPException
+from fastapi.exceptions import RequestValidationError
+from app.error_handlers import (
+    validation_exception_handler,
+    http_exception_handler,
+    general_exception_handler
+)
 
 app = FastAPI(
     title="Number Theory Web Application",
     description="Educational cryptography toolkit",
     version="1.0.0"
 )
+app.add_exception_handler(RequestValidationError, validation_exception_handler)
+app.add_exception_handler(HTTPException, http_exception_handler)
+app.add_exception_handler(Exception, general_exception_handler)
 
 app.add_middleware(
     CORSMiddleware,
@@ -14,6 +25,28 @@ app.add_middleware(
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+)
+
+@app.on_event("startup")
+def startup():
+    init_db()
+
+app.include_router(
+    auth.router,
+    prefix="/api/auth",
+    tags=["Authentication"]
+)
+
+app.include_router(
+    history.router,
+    prefix="/api/history",
+    tags=["History"]
+)
+
+app.include_router(
+    education.router,
+    prefix="/api/education",
+    tags=["Education"]
 )
 
 app.include_router(
