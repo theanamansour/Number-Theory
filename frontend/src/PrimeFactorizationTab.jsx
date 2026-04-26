@@ -2,6 +2,14 @@ import { useState } from "react";
 import { Hash, Lightbulb, Rocket, RotateCcw, Star, Info } from "lucide-react";
 import "./App.css";
 
+function getAuthHeaders() {
+  const token = localStorage.getItem("token");
+
+  return token
+    ? { Authorization: `Bearer ${token}` }
+    : {};
+}
+
 function PrimeFactorizationTab() {
   const [number, setNumber] = useState("");
   const [result, setResult] = useState(null);
@@ -23,6 +31,7 @@ function PrimeFactorizationTab() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          ...getAuthHeaders(),
         },
         body: JSON.stringify({ n: Number(number) }),
       });

@@ -9,6 +9,14 @@ import {
   Info,
 } from "lucide-react";
 
+function getAuthHeaders() {
+  const token = localStorage.getItem("token");
+
+  return token
+    ? { Authorization: `Bearer ${token}` }
+    : {};
+}
+
 function TotientTab() {
   const [number, setNumber] = useState("");
   const [result, setResult] = useState(null);
@@ -30,6 +38,7 @@ function TotientTab() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          ...getAuthHeaders(),
         },
         body: JSON.stringify({ n: Number(number) }),
       });

@@ -9,6 +9,14 @@ import {
   Info,
 } from "lucide-react";
 
+function getAuthHeaders() {
+  const token = localStorage.getItem("token");
+
+  return token
+    ? { Authorization: `Bearer ${token}` }
+    : {};
+}
+
 function CRTTab() {
   const [mode, setMode] = useState("A_to_residues");
 
@@ -26,6 +34,26 @@ function CRTTab() {
       .map((item) => item.trim())
       .filter((item) => item !== "")
       .map(Number);
+
+  const loadAtoResiduesExample = () => {
+    setMode("A_to_residues");
+    setA("23");
+    setModuli("3,5,7");
+    setResidues("");
+    setResult(null);
+    setError("");
+    setCopied(false);
+  };
+
+  const loadResiduesToAExample = () => {
+    setMode("residues_to_A");
+    setA("");
+    setResidues("2,3,1");
+    setModuli("3,5,7");
+    setResult(null);
+    setError("");
+    setCopied(false);
+  };
 
   const handleCRT = async () => {
     setError("");
@@ -50,7 +78,10 @@ function CRTTab() {
 
         response = await fetch("http://127.0.0.1:8000/api/crt/residues", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+            ...getAuthHeaders(),
+          },
           body: JSON.stringify({
             A: Number(A),
             moduli: moduliList,
@@ -71,7 +102,10 @@ function CRTTab() {
 
         response = await fetch("http://127.0.0.1:8000/api/crt/recover", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: { 
+            "Content-Type": "application/json",
+            ...getAuthHeaders(),
+           },
           body: JSON.stringify({
             residues: residuesList,
             moduli: moduliList,
@@ -201,11 +235,19 @@ function CRTTab() {
               </div>
 
               <div className="example-row crt-row">
-                <button className="example-chip crt-chip">
+                <button
+                  type="button"
+                  className="example-chip crt-chip"
+                  onClick={loadAtoResiduesExample}
+                >
                   A = 23 mod (3,5,7)
                 </button>
 
-                <button className="example-chip crt-chip">
+                <button
+                  type="button"
+                  className="example-chip crt-chip"
+                  onClick={loadResiduesToAExample}
+                >
                   (2,3,1) mod (3,5,7)
                 </button>
               </div>

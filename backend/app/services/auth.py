@@ -13,6 +13,16 @@ def validate_email(email: str):
     if not re.match(EMAIL_REGEX, email):
         raise ValueError("Please enter a valid email address.")
 
+def validate_username(username: str):
+    username = username.strip()
+
+    if len(username) < 2:
+        raise ValueError("Username must be at least 2 characters long.")
+
+    if len(username) > 30:
+        raise ValueError("Username must be at most 30 characters long.")
+
+    return username
 
 def validate_password_strength(password: str):
     if len(password) < 8:
@@ -67,8 +77,8 @@ def get_user_by_email(email: str):
     conn.close()
     return user
 
-
-def create_user(email: str, password: str):
+def create_user(username: str, email: str, password: str):
+    username = validate_username(username)
     email = email.strip().lower()
 
     validate_email(email)
@@ -82,13 +92,16 @@ def create_user(email: str, password: str):
     conn = get_connection()
     cursor = conn.cursor()
     cursor.execute(
-        "INSERT INTO users (email, password_hash) VALUES (?, ?)",
-        (email, password_hash)
+        "INSERT INTO users (username, email, password_hash) VALUES (?, ?, ?)",
+        (username, email, password_hash)
     )
     conn.commit()
 
     user_id = cursor.lastrowid
-    cursor.execute("SELECT id, email, created_at FROM users WHERE id = ?", (user_id,))
+    cursor.execute(
+        "SELECT id, username, email, created_at FROM users WHERE id = ?",
+        (user_id,)
+    )
     user = cursor.fetchone()
     conn.close()
     return dict(user)
@@ -108,16 +121,15 @@ def create_session_token(user_id: int) -> str:
 
     return token
 
-
 def login_user(email: str, password: str):
     email = email.strip().lower()
     user = get_user_by_email(email)
 
     if not user:
-        raise ValueError("Invalid email or password.")
+        raise ValueError("No account found with this email. Please create an account.")
 
     if not verify_password(password, user["password_hash"]):
-        raise ValueError("Invalid email or password.")
+        raise ValueError("Incorrect password. Please try again.")
 
     token = create_session_token(user["id"])
 
@@ -125,17 +137,30 @@ def login_user(email: str, password: str):
         "token": token,
         "user": {
             "id": user["id"],
+            "username": user["username"],
             "email": user["email"],
             "created_at": user["created_at"]
         }
     }
 
+def check_email_status(email: str):
+    email = email.strip().lower()
+
+    validate_email(email)
+
+    user = get_user_by_email(email)
+
+    return {
+        "email": email,
+        "available": user is None,
+        "message": "Email is available." if user is None else "This email is already in use."
+    }
 
 def get_user_by_token(token: str):
     conn = get_connection()
     cursor = conn.cursor()
     cursor.execute("""
-        SELECT users.id, users.email, users.created_at
+        SELECT users.id, users.username, users.email, users.created_at
         FROM sessions
         JOIN users ON sessions.user_id = users.id
         WHERE sessions.token = ?

@@ -9,7 +9,8 @@ from app.services.education import (
     get_quiz,
     check_quiz_answers,
     save_education_attempt,
-    get_user_education_progress
+    get_user_education_progress,
+    complete_lesson
 )
 
 router = APIRouter()
@@ -18,6 +19,7 @@ router = APIRouter()
 class PracticeCheckRequest(BaseModel):
     topic_id: str
     exercise_id: str
+    step_id: str
     answer: str
 
     def validate_input(self):
@@ -25,14 +27,25 @@ class PracticeCheckRequest(BaseModel):
             raise ValueError("Topic is required.")
         if not self.exercise_id.strip():
             raise ValueError("Exercise is required.")
+        if not self.step_id.strip():
+            raise ValueError("Step is required.")
         if not self.answer.strip():
             raise ValueError("Answer cannot be empty.")
+        
+class LessonCompleteRequest(BaseModel):
+    topic_id: str
+    lesson_id: str
 
+    def validate_input(self):
+        if not self.topic_id.strip():
+            raise ValueError("Topic is required.")
+        if not self.lesson_id.strip():
+            raise ValueError("Lesson is required.")
 
 class QuizAnswer(BaseModel):
     question_id: str
-    selected_option_id: str
-
+    selected_option_id: str | None = None
+    answer: str | None = None
 
 class QuizCheckRequest(BaseModel):
     topic_id: str
@@ -79,24 +92,34 @@ def check_practice(
         result = check_practice_answer(
             request.topic_id,
             request.exercise_id,
+            request.step_id,
             request.answer
         )
 
         if current_user:
             save_education_attempt(
                 user_id=current_user["id"],
-                mode="practice",
+                mode="practice_step",
                 topic_id=request.topic_id,
-                item_id=request.exercise_id,
+                item_id=f"{request.exercise_id}:{request.step_id}",
                 user_answer=request.answer,
                 is_correct=result["is_correct"]
             )
+
+            if result["is_correct"] and result["is_final_step"]:
+                save_education_attempt(
+                    user_id=current_user["id"],
+                    mode="practice",
+                    topic_id=request.topic_id,
+                    item_id=request.exercise_id,
+                    user_answer="completed",
+                    is_correct=True
+                )
 
         return result
 
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
-
 
 @router.get("/quiz/{topic_id}")
 def quiz(topic_id: str):
@@ -117,7 +140,8 @@ def check_quiz(
         answers_as_dicts = [
             {
                 "question_id": answer.question_id,
-                "selected_option_id": answer.selected_option_id
+                "selected_option_id": answer.selected_option_id,
+                "answer": answer.answer
             }
             for answer in request.answers
         ]
@@ -141,6 +165,22 @@ def check_quiz(
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
 
+@router.post("/lesson/complete")
+def mark_lesson_complete(
+    request: LessonCompleteRequest,
+    current_user=Depends(get_current_user_required)
+):
+    try:
+        request.validate_input()
+
+        return complete_lesson(
+            user_id=current_user["id"],
+            topic_id=request.topic_id,
+            lesson_id=request.lesson_id
+        )
+
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
 
 @router.get("/progress/me")
 def my_education_progress(current_user=Depends(get_current_user_required)):

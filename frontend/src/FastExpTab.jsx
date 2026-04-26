@@ -9,6 +9,14 @@ import {
   Info,
 } from "lucide-react";
 
+function getAuthHeaders() {
+  const token = localStorage.getItem("token");
+
+  return token
+    ? { Authorization: `Bearer ${token}` }
+    : {};
+}
+
 function FastExponentiationTab() {
   const [base, setBase] = useState("");
   const [exponent, setExponent] = useState("");
@@ -47,6 +55,8 @@ function FastExponentiationTab() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          ...getAuthHeaders(),
+
         },
         body: JSON.stringify({
           a: Number(base),

@@ -9,6 +9,14 @@ import {
   Info,
 } from "lucide-react";
 
+function getAuthHeaders() {
+  const token = localStorage.getItem("token");
+
+  return token
+    ? { Authorization: `Bearer ${token}` }
+    : {};
+}
+
 function MillerRabinTab() {
   const [number, setNumber] = useState("");
   const [base, setBase] = useState("");
@@ -44,6 +52,7 @@ function MillerRabinTab() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          ...getAuthHeaders(),
         },
         body: JSON.stringify({
           n: nValue,
