@@ -41,3 +41,18 @@ def get_user_history(user_id: int):
         })
 
     return history
+
+def clear_user_calculation_history(user_id: int):
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    cursor.execute(
+        "DELETE FROM history WHERE user_id = ?",
+        (user_id,)
+    )
+
+    conn.commit()
+    deleted_count = cursor.rowcount
+    conn.close()
+
+    return deleted_count

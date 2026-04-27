@@ -302,6 +302,169 @@ function ProfilePage({ user, openAuthModal, setActivePage }) {
     return JSON.stringify(result);
   }
 
+    function escapeCSV(value) {
+    const text = value === null || value === undefined ? "" : String(value);
+    const excelSafeText = `\t${text}`;
+    return `"${excelSafeText.replace(/"/g, '""')}"`;
+  }
+
+  function cleanForCSV(value) {
+    return String(value ?? "")
+      .replaceAll("φ", "phi")
+      .replaceAll("Φ", "Phi")
+      .replaceAll("×", "x")
+      .replaceAll("≡", "congruent to")
+      .replaceAll("²", "^2")
+      .replaceAll("³", "^3")
+      .replaceAll("⁴", "^4")
+      .replaceAll("⁵", "^5")
+      .replaceAll("⁶", "^6")
+      .replaceAll("⁷", "^7")
+      .replaceAll("⁸", "^8")
+      .replaceAll("⁹", "^9")
+      .replaceAll("⁰", "^0")
+      .replaceAll("–", "-")   // en dash
+      .replaceAll("—", "-")   // em dash
+      .replaceAll("−", "-")   // minus sign
+      .replaceAll("¹", "^1");
+  }
+
+  function escapeCSV(value) {
+    const text = cleanForCSV(value);
+    const excelSafeText = `\t${text}`;
+    return `"${excelSafeText.replace(/"/g, '""')}"`;
+  }
+
+  function handleExportHistory() {
+    try {
+      setError("");
+
+      if (history.length === 0) {
+        setError("No calculation history to export.");
+        return;
+      }
+
+      const headers = ["Tool", "Input", "Result", "Date & Time"];
+
+      const rows = history.map((item) => [
+        OPERATION_LABELS[item.operation] || item.operation,
+        formatInput(item.input_data),
+        formatResult(item.result_data),
+        item.created_at,
+      ]);
+
+      const csvContent = [
+        "sep=,",
+        headers.map(escapeCSV).join(","),
+        ...rows.map((row) => row.map(escapeCSV).join(",")),
+      ].join("\n");
+
+      const blob = new Blob(["\uFEFF" + csvContent], {
+        type: "text/csv;charset=utf-8;",
+      });
+
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+
+      link.href = url;
+      link.download = "number-theory-calculation-history.csv";
+
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      URL.revokeObjectURL(url);
+    } catch {
+      setError("Could not export calculation history.");
+    }
+  }
+
+
+  function handleExportHistory() {
+    try {
+      setError("");
+
+      if (history.length === 0) {
+        setError("No calculation history to export.");
+        return;
+      }
+
+      const headers = ["Tool", "Input", "Result", "Date & Time"];
+
+      const rows = history.map((item) => [
+        OPERATION_LABELS[item.operation] || item.operation,
+        formatInput(item.input_data),
+        formatResult(item.result_data),
+        item.created_at,
+      ]);
+
+      const csvContent = [
+        headers.map(escapeCSV).join(","),
+        ...rows.map((row) => row.map(escapeCSV).join(",")),
+      ].join("\n");
+
+      const blob = new Blob([csvContent], {
+        type: "text/csv;charset=utf-8;",
+      });
+
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+
+      link.href = url;
+      link.download = "number-theory-calculation-history.csv";
+
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      URL.revokeObjectURL(url);
+    } catch {
+      setError("Could not export calculation history.");
+    }
+  }
+
+  async function handleClearHistory() {
+    try {
+      setError("");
+
+      if (history.length === 0) {
+        setError("No calculation history to clear.");
+        return;
+      }
+
+      const confirmed = window.confirm(
+        "Are you sure you want to clear your calculation history? This will not delete your account or education progress."
+      );
+
+      if (!confirmed) {
+        return;
+      }
+
+      const response = await fetch(`${HISTORY_API}/me`, {
+        method: "DELETE",
+        headers: {
+          ...getAuthHeaders(),
+        },
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          data?.detail ||
+            data?.error?.message ||
+            "Could not clear calculation history."
+        );
+      }
+
+      setHistory([]);
+      setSearchTerm("");
+      setToolFilter("all");
+    } catch (err) {
+      setError(err.message);
+    }
+  }
+
   if (!user) {
     return (
       <section className="profile-page">
@@ -343,12 +506,20 @@ function ProfilePage({ user, openAuthModal, setActivePage }) {
         </div>
 
         <div className="profile-actions">
-          <button type="button" className="profile-soft-button">
+          <button
+            type="button"
+            className="profile-soft-button"
+            onClick={handleExportHistory}
+          >
             <Download size={16} />
             Export History
           </button>
 
-          <button type="button" className="profile-danger-button">
+          <button
+            type="button"
+            className="profile-danger-button"
+            onClick={handleClearHistory}
+          >
             <Trash2 size={16} />
             Clear History
           </button>
@@ -508,7 +679,7 @@ function ProfilePage({ user, openAuthModal, setActivePage }) {
                 </thead>
 
                 <tbody>
-                  {filteredHistory.slice(0, 8).map((item) => (
+                  {filteredHistory.map((item) => (
                     <tr key={item.id}>
                       <td>
                         <span className="history-tool-pill">

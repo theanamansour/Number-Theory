@@ -2513,6 +2513,16 @@ input:focus {
 
 .profile-history-table-wrap {
   overflow-x: auto;
+  overflow-y: auto;
+  max-height: 420px;
+  border: 1px solid #eee5ef;
+  border-radius: 16px;
+}
+.profile-history-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: #fbf8fc;
 }
 
 .profile-history-table {
