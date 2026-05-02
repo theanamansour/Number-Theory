@@ -20,7 +20,8 @@ import {
 
 import heroImage from "./assets/hero.png";
 
-const AUTH_API = "http://127.0.0.1:8000/api/auth";
+const API_BASE = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000";
+const AUTH_API = `${API_BASE}/api/auth`;
 
 function App() {
   const [activePage, setActivePage] = useState("home");

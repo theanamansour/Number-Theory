@@ -1,6 +1,8 @@
 import { useState } from "react";
 import "./App.css";
 import {
+
+const API_BASE = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000";
   Zap,
   Lightbulb,
   Rocket,
@@ -51,7 +53,7 @@ function FastExponentiationTab() {
     }
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/fastexp/", {
+      const response = await fetch(`${API_BASE}/api/fastexp/`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

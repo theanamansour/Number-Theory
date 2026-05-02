@@ -1,6 +1,8 @@
 import { useState } from "react";
 import "./App.css";
 import {
+
+const API_BASE = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000";
   CircleDot,
   Lightbulb,
   Rocket,
@@ -34,7 +36,7 @@ function TotientTab() {
     }
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/totient/", {
+      const response = await fetch(`${API_BASE}/api/totient/`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

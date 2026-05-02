@@ -2,6 +2,8 @@ import { useState } from "react";
 import { Hash, Lightbulb, Rocket, RotateCcw, Star, Info } from "lucide-react";
 import "./App.css";
 
+const API_BASE = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000";
+
 function getAuthHeaders() {
   const token = localStorage.getItem("token");
 
@@ -27,7 +29,7 @@ function PrimeFactorizationTab() {
     }
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/factorization/", {
+      const response = await fetch(`${API_BASE}/api/factorization/`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

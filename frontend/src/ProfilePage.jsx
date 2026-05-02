@@ -20,8 +20,9 @@ import {
   Diamond,
 } from "lucide-react";
 
-const HISTORY_API = "http://127.0.0.1:8000/api/history";
-const EDUCATION_API = "http://127.0.0.1:8000/api/education";
+const API_BASE = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000";
+const HISTORY_API = `${API_BASE}/api/history`;
+const EDUCATION_API = `${API_BASE}/api/education`;
 
 const MODULES = {
   factorization: {

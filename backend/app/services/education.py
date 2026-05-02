@@ -26,8 +26,10 @@ def get_all_topics():
 
 def get_topic(topic_id: str):
     topic = EDUCATION_TOPICS.get(topic_id)
+
     if not topic:
         raise ValueError("Topic not found.")
+
     return topic
 
 
@@ -46,6 +48,7 @@ def get_lesson(topic_id: str):
         "lesson": lessons[0],
         "lessons": lessons
     }
+
 
 def get_practice(topic_id: str):
     topic = get_topic(topic_id)
@@ -74,6 +77,7 @@ def get_practice(topic_id: str):
             for item in topic["practice"]
         ]
     }
+
 
 def check_practice_answer(topic_id: str, exercise_id: str, step_id: str, answer: str):
     topic = get_topic(topic_id)
@@ -129,7 +133,6 @@ def check_practice_answer(topic_id: str, exercise_id: str, step_id: str, answer:
     }
 
 
-
 def get_quiz(topic_id: str):
     topic = get_topic(topic_id)
 
@@ -152,6 +155,7 @@ def get_quiz(topic_id: str):
         "topic_title": topic["title"],
         "questions": questions
     }
+
 
 def check_quiz_answers(topic_id: str, answers: list[dict]):
     topic = get_topic(topic_id)
@@ -216,6 +220,7 @@ def check_quiz_answers(topic_id: str, answers: list[dict]):
         "results": results
     }
 
+
 def save_education_attempt(
     user_id,
     mode: str,
@@ -229,23 +234,29 @@ def save_education_attempt(
     conn = get_connection()
     cursor = conn.cursor()
 
-    cursor.execute("""
+    cursor.execute(
+        """
         INSERT INTO education_attempts
         (user_id, mode, topic_id, item_id, user_answer, is_correct, score, total)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-    """, (
-        user_id,
-        mode,
-        topic_id,
-        item_id,
-        user_answer,
-        1 if is_correct else 0,
-        score,
-        total
-    ))
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+        """,
+        (
+            user_id,
+            mode,
+            topic_id,
+            item_id,
+            user_answer,
+            1 if is_correct else 0,
+            score,
+            total
+        )
+    )
 
     conn.commit()
+
+    cursor.close()
     conn.close()
+
 
 def complete_lesson(user_id: int, topic_id: str, lesson_id: str):
     topic = get_topic(topic_id)
@@ -278,14 +289,19 @@ def get_user_education_progress(user_id: int):
     conn = get_connection()
     cursor = conn.cursor()
 
-    cursor.execute("""
+    cursor.execute(
+        """
         SELECT id, mode, topic_id, item_id, user_answer, is_correct, score, total, created_at
         FROM education_attempts
-        WHERE user_id = ?
+        WHERE user_id = %s
         ORDER BY created_at DESC, id DESC
-    """, (user_id,))
+        """,
+        (user_id,)
+    )
 
     rows = cursor.fetchall()
+
+    cursor.close()
     conn.close()
 
     return [

@@ -1,6 +1,8 @@
 import { useState } from "react";
 import "./App.css";
 import {
+
+const API_BASE = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000";
   Grid,
   Lightbulb,
   Rocket,
@@ -76,7 +78,7 @@ function CRTTab() {
           return;
         }
 
-        response = await fetch("http://127.0.0.1:8000/api/crt/residues", {
+        response = await fetch(`${API_BASE}/api/crt/residues`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -100,7 +102,7 @@ function CRTTab() {
           return;
         }
 
-        response = await fetch("http://127.0.0.1:8000/api/crt/recover", {
+        response = await fetch(`${API_BASE}/api/crt/recover`, {
           method: "POST",
           headers: { 
             "Content-Type": "application/json",

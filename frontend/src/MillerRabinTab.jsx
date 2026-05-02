@@ -1,6 +1,8 @@
 import { useState } from "react";
 import "./App.css";
 import {
+
+const API_BASE = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000";
   Diamond,
   Lightbulb,
   Rocket,
@@ -48,7 +50,7 @@ function MillerRabinTab() {
     }
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/millerrabin/", {
+      const response = await fetch(`${API_BASE}/api/millerrabin/`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
