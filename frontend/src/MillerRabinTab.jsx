@@ -1,8 +1,6 @@
 import { useState } from "react";
 import "./App.css";
 import {
-
-const API_BASE = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000";
   Diamond,
   Lightbulb,
   Rocket,
@@ -11,6 +9,7 @@ const API_BASE = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000";
   Info,
 } from "lucide-react";
 
+const API_BASE = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000";
 function getAuthHeaders() {
   const token = localStorage.getItem("token");
 
