@@ -62,7 +62,7 @@ def clear_user_calculation_history(user_id: int):
     cursor = conn.cursor()
 
     cursor.execute(
-        "DELETE FROM history WHERE user_id = ?",
+        "DELETE FROM history WHERE user_id = %s",
         (user_id,)
     )
 
